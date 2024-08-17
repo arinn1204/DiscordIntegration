@@ -1,22 +1,16 @@
 /*
- * Copyright (C) 2017 Chikachi
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see http://www.gnu.org/licenses.
+ * Copyright (C) 2017 Chikachi This program is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details. You should have received a copy of the GNU Affero General
+ * Public License along with this program. If not, see http://www.gnu.org/licenses.
  */
 
 package chikachi.discord.command;
 
-import chikachi.discord.DiscordFakePlayer;
-import chikachi.discord.DiscordTeleporter;
-import com.mojang.authlib.GameProfile;
+import java.util.ArrayList;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,9 +21,13 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.IPlayerFileData;
 import net.minecraftforge.common.DimensionManager;
 
-import java.util.ArrayList;
+import com.mojang.authlib.GameProfile;
+
+import chikachi.discord.DiscordFakePlayer;
+import chikachi.discord.DiscordTeleporter;
 
 public class SubCommandUnstuck {
+
     public static void execute(ICommandSender sender, ArrayList<String> args) {
         if (args.size() == 0) {
             sender.addChatMessage(new ChatComponentText("Missing user"));
@@ -60,7 +58,8 @@ public class SubCommandUnstuck {
             int fromDimension = player.dimension;
 
             if (fromDimension != 0) {
-                minecraftServer.getConfigurationManager().transferPlayerToDimension(player, 0, new DiscordTeleporter(overworld));
+                minecraftServer.getConfigurationManager()
+                        .transferPlayerToDimension(player, 0, new DiscordTeleporter(overworld));
 
                 if (fromDimension == 1 && player.isEntityAlive()) {
                     overworld.spawnEntityInWorld(player);
@@ -81,7 +80,7 @@ public class SubCommandUnstuck {
             IPlayerFileData saveHandler = minecraftServer.worldServers[0].getSaveHandler().getSaveHandler();
             NBTTagCompound playerData = saveHandler.readPlayerData(fakePlayer);
 
-            //noinspection ConstantConditions
+            // noinspection ConstantConditions
             if (playerData == null) {
                 sender.addChatMessage(new ChatComponentText("Player not found on server"));
                 return;

@@ -1,0 +1,22 @@
+[
+  {
+    "modid": "discordintegration",
+    "name": "DiscordIntegration",
+    "description": "Minecraft <=> Discord integration",
+    "version": "${modVersion}",
+    "mcversion": "${minecraftVersion}",
+    "url": "https://github.com/arinn/DiscordIntegration",
+    "updateUrl": "",
+    "authorList": [
+      "Chikachi",
+      "arinn"
+    ],
+    "credits": "Chikachi",
+    "logoFile": "",
+    "screenshots": [],
+    "requiredMods": [
+      "Forge"
+    ],
+    "dependencies": []
+  }
+]

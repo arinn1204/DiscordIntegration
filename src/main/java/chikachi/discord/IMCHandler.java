@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2017 Chikachi
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see http://www.gnu.org/licenses.
+ * Copyright (C) 2017 Chikachi This program is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details. You should have received a copy of the GNU Affero General
+ * Public License along with this program. If not, see http://www.gnu.org/licenses.
  */
 
 package chikachi.discord;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.nbt.NBTTagCompound;
 
 import chikachi.discord.core.DiscordClient;
 import chikachi.discord.core.DiscordIntegrationLogger;
@@ -21,12 +21,9 @@ import chikachi.discord.core.config.Configuration;
 import chikachi.discord.core.config.imc.IMCConfig;
 import chikachi.discord.core.config.types.MessageConfig;
 import cpw.mods.fml.common.event.FMLInterModComms;
-import net.minecraft.nbt.NBTTagCompound;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class IMCHandler {
+
     private static List<String> registeredIMCMods = new ArrayList<>();
 
     private static void sendStatusIMC(String modId, boolean success, String method, String message) {
@@ -35,12 +32,7 @@ public class IMCHandler {
         data.setString("method", method);
         data.setString("message", message);
 
-        FMLInterModComms.sendRuntimeMessage(
-            DiscordIntegration.instance,
-            modId,
-            success ? "success" : "error",
-            data
-        );
+        FMLInterModComms.sendRuntimeMessage(DiscordIntegration.instance, modId, success ? "success" : "error", data);
     }
 
     static void onMessageReceived(FMLInterModComms.IMCMessage imcMessage) {
@@ -58,12 +50,7 @@ public class IMCHandler {
         if (key.equalsIgnoreCase("registerListener")) {
             if (!registeredIMCMods.contains(modId)) {
                 if (imcConfig.isAllowed(modId)) {
-                    DiscordIntegrationLogger.Log(
-                        String.format(
-                            "Added %s as listener",
-                            modId
-                        )
-                    );
+                    DiscordIntegrationLogger.Log(String.format("Added %s as listener", modId));
 
                     sendStatusIMC(modId, true, key, "Registered");
 
@@ -76,12 +63,7 @@ public class IMCHandler {
             }
         } else if (key.equalsIgnoreCase("unregisterListener")) {
             if (registeredIMCMods.contains(modId)) {
-                DiscordIntegrationLogger.Log(
-                    String.format(
-                        "Removed %s as listener",
-                        modId
-                    )
-                );
+                DiscordIntegrationLogger.Log(String.format("Removed %s as listener", modId));
 
                 sendStatusIMC(modId, true, key, "Unregistered");
 
@@ -111,14 +93,8 @@ public class IMCHandler {
             }
 
             DiscordClient.getInstance().broadcast(
-                new Message(
-                    modId,
-                    new MessageConfig(
-                        message.getString("message")
-                    )
-                ),
-                message.getLong("channel")
-            );
+                    new Message(modId, new MessageConfig(message.getString("message"))),
+                    message.getLong("channel"));
 
             sendStatusIMC(modId, true, key, "Sent");
         }
@@ -128,13 +104,11 @@ public class IMCHandler {
         IMCConfig imcConfig = Configuration.getConfig().imc;
 
         DiscordIntegrationLogger.Log(
-            String.format(
-                "%s tried to %s but %s",
-                modId,
-                action,
-                imcConfig.isWhitelist() ? "wasn't on the whitelist" : "was on the blacklist"
-            )
-        );
+                String.format(
+                        "%s tried to %s but %s",
+                        modId,
+                        action,
+                        imcConfig.isWhitelist() ? "wasn't on the whitelist" : "was on the blacklist"));
 
         sendStatusIMC(modId, false, key, "Not Allowed");
     }
@@ -150,20 +124,14 @@ public class IMCHandler {
 
     @SuppressWarnings("unused")
     public static void emitMessage(String key, String message) {
-        registeredIMCMods.forEach(registeredIMCMod -> FMLInterModComms.sendRuntimeMessage(
-            DiscordIntegration.instance,
-            registeredIMCMod,
-            key,
-            message
-        ));
+        registeredIMCMods.forEach(
+                registeredIMCMod -> FMLInterModComms
+                        .sendRuntimeMessage(DiscordIntegration.instance, registeredIMCMod, key, message));
     }
 
     public static void emitMessage(String key, NBTTagCompound message) {
-        registeredIMCMods.forEach(registeredIMCMod -> FMLInterModComms.sendRuntimeMessage(
-            DiscordIntegration.instance,
-            registeredIMCMod,
-            key,
-            message
-        ));
+        registeredIMCMods.forEach(
+                registeredIMCMod -> FMLInterModComms
+                        .sendRuntimeMessage(DiscordIntegration.instance, registeredIMCMod, key, message));
     }
 }

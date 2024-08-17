@@ -1,18 +1,15 @@
 /*
- * Copyright (C) 2017 Chikachi
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see http://www.gnu.org/licenses.
+ * Copyright (C) 2017 Chikachi This program is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details. You should have received a copy of the GNU Affero General
+ * Public License along with this program. If not, see http://www.gnu.org/licenses.
  */
 
 package chikachi.discord;
+
+import net.minecraftforge.common.MinecraftForge;
 
 import chikachi.discord.command.CommandDiscord;
 import chikachi.discord.core.CoreConstants;
@@ -23,11 +20,22 @@ import chikachi.discord.listener.DiscordListener;
 import chikachi.discord.listener.MinecraftListener;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.event.*;
-import net.minecraftforge.common.MinecraftForge;
+import cpw.mods.fml.common.event.FMLInterModComms;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 
-@Mod(modid = CoreConstants.MODID, name = CoreConstants.MODNAME, version = CoreConstants.VERSION, acceptableRemoteVersions = "*")
+@Mod(
+        modid = CoreConstants.MODID,
+        name = CoreConstants.MODNAME,
+        version = CoreConstants.VERSION,
+        acceptableRemoteVersions = "*")
 public class DiscordIntegration {
+
     @Mod.Instance
     static DiscordIntegration instance;
 
@@ -46,12 +54,11 @@ public class DiscordIntegration {
 
     @Mod.EventHandler
     public void onPostInit(FMLPostInitializationEvent event) {
-        event.buildSoftDependProxy("Dynmap", "chikachi.discord.integration.DynmapIntegration");
+        // event.buildSoftDependProxy("Dynmap", "chikachi.discord.integration.DynmapIntegration");
     }
 
     @Mod.EventHandler
-    public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
-    }
+    public void onServerAboutToStart(FMLServerAboutToStartEvent event) {}
 
     @Mod.EventHandler
     public void onServerStarting(FMLServerStartingEvent event) {

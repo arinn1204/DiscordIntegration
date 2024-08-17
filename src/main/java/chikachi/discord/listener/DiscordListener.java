@@ -1,18 +1,30 @@
 /*
- * Copyright (C) 2017 Chikachi
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see http://www.gnu.org/licenses.
+ * Copyright (C) 2017 Chikachi This program is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details. You should have received a copy of the GNU Affero General
+ * Public License along with this program. If not, see http://www.gnu.org/licenses.
  */
 
 package chikachi.discord.listener;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentText;
+
+import com.mojang.authlib.GameProfile;
 
 import chikachi.discord.DiscordCommandSender;
 import chikachi.discord.IMCHandler;
@@ -26,20 +38,10 @@ import chikachi.discord.core.config.discord.CommandConfig;
 import chikachi.discord.core.config.discord.DiscordChannelGenericConfig;
 import chikachi.discord.core.config.discord.DiscordConfig;
 import chikachi.discord.core.config.linking.LinkingRequest;
-import com.mojang.authlib.GameProfile;
 import cpw.mods.fml.common.FMLCommonHandler;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-
-import java.util.*;
 
 public class DiscordListener extends ListenerAdapter {
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         ConfigWrapper config = Configuration.getConfig();
@@ -98,7 +100,8 @@ public class DiscordListener extends ListenerAdapter {
                 IMCHandler.emitMessage("event", eventTagCompound);
             }
 
-            String prefix = channelConfig.commandPrefix != null ? channelConfig.commandPrefix : discordConfig.channels.generic.commandPrefix;
+            String prefix = channelConfig.commandPrefix != null ? channelConfig.commandPrefix
+                    : discordConfig.channels.generic.commandPrefix;
             if (content.startsWith(prefix)) {
                 List<String> args = new ArrayList<>(Arrays.asList(content.substring(prefix.length()).split(" ")));
                 tryExecuteCommand(event, args);
@@ -108,19 +111,19 @@ public class DiscordListener extends ListenerAdapter {
             MinecraftServer minecraftServer = MinecraftServer.getServer();
             final List<EntityPlayerMP> players = new ArrayList<>();
             if (dimensions.size() == 0) {
-                //noinspection unchecked
-                minecraftServer.getConfigurationManager().playerEntityList
-                    .forEach(playerEntity -> {
-                        if (playerEntity instanceof EntityPlayerMP) {
-                            players.add((EntityPlayerMP) playerEntity);
-                        }
-                    });
+                // noinspection unchecked
+                minecraftServer.getConfigurationManager().playerEntityList.forEach(playerEntity -> {
+                    if (playerEntity instanceof EntityPlayerMP) {
+                        players.add((EntityPlayerMP) playerEntity);
+                    }
+                });
             } else {
-                //noinspection unchecked
-                minecraftServer.getConfigurationManager().playerEntityList
-                    .stream()
-                    .filter(playerEntity -> playerEntity instanceof EntityPlayerMP && dimensions.contains(((EntityPlayerMP) playerEntity).dimension))
-                    .forEach(player -> players.add((EntityPlayerMP) player));
+                // noinspection unchecked
+                minecraftServer.getConfigurationManager().playerEntityList.stream()
+                        .filter(
+                                playerEntity -> playerEntity instanceof EntityPlayerMP
+                                        && dimensions.contains(((EntityPlayerMP) playerEntity).dimension))
+                        .forEach(player -> players.add((EntityPlayerMP) player));
             }
 
             if (stripMinecraftCodes) {
@@ -128,27 +131,24 @@ public class DiscordListener extends ListenerAdapter {
             }
 
             HashMap<String, String> arguments = new HashMap<>();
-            arguments.put(
-                "MESSAGE",
-                content
-            );
+            arguments.put("MESSAGE", content);
 
-            Message message = new Message()
-                .setAuthor(event.getMember().getEffectiveName())
-                .setMessage(config.discord.channels.generic.messages.chatMessage)
-                .setArguments(arguments);
+            Message message = new Message().setAuthor(event.getMember().getEffectiveName())
+                    .setMessage(config.discord.channels.generic.messages.chatMessage).setArguments(arguments);
 
             DiscordIntegrationLogger.Log(message.getFormattedTextMinecraft());
             for (EntityPlayerMP player : players) {
                 player.addChatMessage(new ChatComponentText(message.getFormattedTextMinecraft()));
             }
-        } else if (event.getChannelType() == ChannelType.PRIVATE && Configuration.getConfig().discord.channels.generic.allowDMCommands) {
-            String prefix = discordConfig.channels.generic.commandPrefix;
-            if (content.startsWith(prefix)) {
-                List<String> args = new ArrayList<>(Arrays.asList(content.substring(prefix.length()).split(" ")));
-                tryExecuteCommand(event, args);
-            }
-        }
+        } else if (event.getChannelType() == ChannelType.PRIVATE
+                && Configuration.getConfig().discord.channels.generic.allowDMCommands) {
+                    String prefix = discordConfig.channels.generic.commandPrefix;
+                    if (content.startsWith(prefix)) {
+                        List<String> args = new ArrayList<>(
+                                Arrays.asList(content.substring(prefix.length()).split(" ")));
+                        tryExecuteCommand(event, args);
+                    }
+                }
     }
 
     private void tryExecuteCommand(MessageReceivedEvent event, List<String> args) {
@@ -160,13 +160,13 @@ public class DiscordListener extends ListenerAdapter {
                 UUID minecraftUUID = Configuration.getLinking().getMinecraftId(event.getAuthor().getIdLong());
                 if (minecraftUUID != null) {
                     GameProfile minecraftProfile = minecraftServer.func_152358_ax().func_152652_a(minecraftUUID);
-                    event.getAuthor().openPrivateChannel()
-                        .queue(privateChannel -> privateChannel.sendMessage(
-                            String.format(
-                                "You are already linked to %s",
-                                minecraftProfile == null ? "a Minecraft account" : minecraftProfile.getName()
-                            )
-                        ).queue());
+                    event.getAuthor().openPrivateChannel().queue(
+                            privateChannel -> privateChannel.sendMessage(
+                                    String.format(
+                                            "You are already linked to %s",
+                                            minecraftProfile == null ? "a Minecraft account"
+                                                    : minecraftProfile.getName()))
+                                    .queue());
                     return;
                 }
 
@@ -176,16 +176,15 @@ public class DiscordListener extends ListenerAdapter {
                     request.generateCode();
                 }
 
-                event.getAuthor().openPrivateChannel()
-                    .queue(privateChannel -> privateChannel.sendMessage(
-                        String.format(
-                            "Use `/discord link %s` on the Minecraft server to link your Discord user with your Minecraft user.\nThe code expires in %s!",
-                            request.getCode(),
-                            request.expiresIn()
-                        )
-                    ).queue());
+                event.getAuthor().openPrivateChannel().queue(
+                        privateChannel -> privateChannel.sendMessage(
+                                String.format(
+                                        "Use `/discord link %s` on the Minecraft server to link your Discord user with your Minecraft user.\nThe code expires in %s!",
+                                        request.getCode(),
+                                        request.expiresIn()))
+                                .queue());
 
-                if (event.getMember().getPermissions(event.getTextChannel()).contains(Permission.MESSAGE_MANAGE)) {
+                if (event.getMember().getPermissions(event.getGuildChannel()).contains(Permission.MESSAGE_MANAGE)) {
                     event.getMessage().delete().queue();
                 }
 
@@ -196,18 +195,14 @@ public class DiscordListener extends ListenerAdapter {
                 UUID minecraftUUID = Configuration.getLinking().getMinecraftId(event.getAuthor().getIdLong());
                 if (minecraftUUID == null) {
                     event.getAuthor().openPrivateChannel()
-                        .queue(privateChannel -> privateChannel.sendMessage(
-                            "You aren't linked"
-                        ).queue());
+                            .queue(privateChannel -> privateChannel.sendMessage("You aren't linked").queue());
                 } else {
                     Configuration.getLinking().removeLink(minecraftUUID);
                     event.getAuthor().openPrivateChannel()
-                        .queue(privateChannel -> privateChannel.sendMessage(
-                            "Unlinked"
-                        ).queue());
+                            .queue(privateChannel -> privateChannel.sendMessage("Unlinked").queue());
                 }
 
-                if (event.getMember().getPermissions(event.getTextChannel()).contains(Permission.MESSAGE_MANAGE)) {
+                if (event.getMember().getPermissions(event.getGuildChannel()).contains(Permission.MESSAGE_MANAGE)) {
                     event.getMessage().delete().queue();
                 }
                 return;
@@ -218,9 +213,8 @@ public class DiscordListener extends ListenerAdapter {
         for (CommandConfig command : commands) {
             if (command.shouldExecute(cmd, event.getAuthor(), event.getChannel())) {
                 FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager().executeCommand(
-                    new DiscordCommandSender(event.getChannel(), event.getAuthor()),
-                    command.buildCommand(args)
-                );
+                        new DiscordCommandSender(event.getChannel(), event.getAuthor()),
+                        command.buildCommand(args));
                 return;
             }
         }
