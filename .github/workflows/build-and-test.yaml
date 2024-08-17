@@ -48,14 +48,6 @@ jobs:
         run: ./gradlew --build-cache --info --stacktrace ${{ inputs.workspace }}
       - name: Compile
         run: ./gradlew --build-cache --info --stacktrace assemble
-
-      - name: Attach compilation artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.repository_id }}-build-libs
-          path: build/libs/
-          retention-days: 31
-
       - name: Attempt to make a PR fixing spotless errors
         if: ${{ failure() && steps.build_mod.conclusion == 'failure' && github.event_name == 'pull_request' && !github.event.pull_request.draft }}
         run: |
@@ -95,3 +87,9 @@ jobs:
       - name: Test no prerelease dependencies used
         run: |
           ! grep -F -- "-pre" dependencies.gradle*
+      - name: Attach compilation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.repository_id }}-build-libs
+          path: build/libs/
+          retention-days: 31
