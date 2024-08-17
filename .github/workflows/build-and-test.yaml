@@ -4,6 +4,18 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
+  workflow_call:
+    inputs:
+      timeout:
+        description: 'Timeout for runServer (seconds)'
+        required: false
+        default: 90
+        type: number
+      workspace:
+        description: 'setupCIWorkspace/setupDecompWorkspace'
+        required: false
+        default: "setupCIWorkspace"
+        type: string
 
 jobs:
   build-and-test:
@@ -15,6 +27,12 @@ jobs:
           fetch-depth: 0
       - name: Validate gradle wrapper checksum
         uses: gradle/wrapper-validation-action@v2
+      - name: Checkout GTNH workflows repo
+        uses: actions/checkout@v4
+        with:
+          repository: GTNewHorizons/GTNH-Actions-Workflows
+          path: .gtnh-workflows
+          fetch-depth: 0
       - name: Set up JDK versions
         uses: actions/setup-java@v4
         with:
@@ -63,7 +81,6 @@ jobs:
           PR_BRANCH: ${{ github.head_ref }}
           FIXED_BRANCH: ${{ github.head_ref }}-spotless-fixes
       - name: Run server for ${{ inputs.timeout }} seconds
-        if: ${{ !inputs.client-only }}
         run: |
           mkdir -p run
           echo "eula=true" > run/eula.txt
@@ -72,7 +89,6 @@ jobs:
           echo "stop" > run/stop.txt
           timeout ${{ inputs.timeout }} ./gradlew --build-cache --info --stacktrace runServer 2>&1 < run/stop.txt | tee -a server.log || true
       - name: Test no errors reported during server run
-        if: ${{ !inputs.client-only }}
         run: |
           chmod +x .gtnh-workflows/scripts/test_no_error_reports
           .gtnh-workflows/scripts/test_no_error_reports
