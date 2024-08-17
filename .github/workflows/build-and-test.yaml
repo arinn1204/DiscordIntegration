@@ -4,19 +4,6 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
-  workflow_call:
-    inputs:
-      timeout:
-        description: 'Timeout for runServer (seconds)'
-        required: false
-        default: 90
-        type: number
-      workspace:
-        description: 'setupCIWorkspace/setupDecompWorkspace'
-        required: false
-        default: "setupCIWorkspace"
-        type: string
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -45,7 +32,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Setup the workspace
-        run: ./gradlew --build-cache --info --stacktrace ${{ inputs.workspace }}
+        run: ./gradlew --build-cache --info --stacktrace setupCIWorkspace
       - name: Compile
         run: ./gradlew --build-cache --info --stacktrace assemble
       - name: Attempt to make a PR fixing spotless errors
@@ -72,14 +59,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_BRANCH: ${{ github.head_ref }}
           FIXED_BRANCH: ${{ github.head_ref }}-spotless-fixes
-      - name: Run server for ${{ inputs.timeout }} seconds
+      - name: Run server for 90 seconds
         run: |
           mkdir -p run
           echo "eula=true" > run/eula.txt
           # Set a constant seed with a village at spawn
           echo "level-seed=-6202107849386030209\nonline-mode=true\n" > run/server.properties
           echo "stop" > run/stop.txt
-          timeout ${{ inputs.timeout }} ./gradlew --build-cache --info --stacktrace runServer 2>&1 < run/stop.txt | tee -a server.log || true
+          timeout 90 ./gradlew --build-cache --info --stacktrace runServer 2>&1 < run/stop.txt | tee -a server.log || true
       - name: Test no errors reported during server run
         run: |
           chmod +x .gtnh-workflows/scripts/test_no_error_reports
