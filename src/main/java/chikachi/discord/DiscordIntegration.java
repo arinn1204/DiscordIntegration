@@ -28,11 +28,12 @@ import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import discordintegration.Tags;
 
 @Mod(
         modid = CoreConstants.MODID,
         name = CoreConstants.MODNAME,
-        version = CoreConstants.VERSION,
+        version = Tags.GRADLETOKEN_VERSION,
         acceptableRemoteVersions = "*")
 public class DiscordIntegration {
 

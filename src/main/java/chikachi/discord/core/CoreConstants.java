@@ -17,7 +17,6 @@ public class CoreConstants {
 
     public static final String MODID = "discordintegration";
     public static final String MODNAME = "DiscordIntegration";
-    public static final String VERSION = "3.0.4";
 
     public static final Map<String, String> minecraftToDiscordEmotes = new HashMap<>();
     public static final Map<String, String> discordToMinecraftEmotes = new HashMap<>();

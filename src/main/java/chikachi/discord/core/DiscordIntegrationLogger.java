@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import discordintegration.Tags;
+
 public class DiscordIntegrationLogger {
 
     private static final Logger logger = LogManager.getLogger(CoreConstants.MODNAME);
@@ -22,6 +24,6 @@ public class DiscordIntegrationLogger {
     }
 
     public static void Log(String message, boolean warning) {
-        logger.log(warning ? Level.WARN : Level.INFO, String.format("[%s] %s", CoreConstants.VERSION, message));
+        logger.log(warning ? Level.WARN : Level.INFO, String.format("[%s] %s", Tags.GRADLETOKEN_VERSION, message));
     }
 }
