@@ -39,6 +39,7 @@ import chikachi.discord.core.config.discord.DiscordChannelGenericConfig;
 import chikachi.discord.core.config.discord.DiscordConfig;
 import chikachi.discord.core.config.linking.LinkingRequest;
 import cpw.mods.fml.common.FMLCommonHandler;
+import joptsimple.internal.Strings;
 
 public class DiscordListener extends ListenerAdapter {
 
@@ -63,6 +64,12 @@ public class DiscordListener extends ListenerAdapter {
         }
 
         String content = event.getMessage().getContentDisplay().trim();
+
+        if (Strings.isNullOrEmpty(content)) {
+            DiscordIntegrationLogger.logger
+                    .warn("No content was received from message for user {}", event.getAuthor().getName());
+            return;
+        }
 
         if (event.getChannelType() == ChannelType.TEXT) {
             Long channelId = event.getChannel().getIdLong();

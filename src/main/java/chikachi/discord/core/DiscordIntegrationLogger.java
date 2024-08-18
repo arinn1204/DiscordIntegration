@@ -9,21 +9,32 @@
 
 package chikachi.discord.core;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.simple.SimpleLoggerFactory;
 
 import discordintegration.Tags;
 
 public class DiscordIntegrationLogger {
 
-    private static final Logger logger = LogManager.getLogger(CoreConstants.MODNAME);
+    public static final Logger logger = new SimpleLoggerFactory().getLogger(CoreConstants.MODNAME);
 
     public static void Log(String message) {
         Log(message, false);
     }
 
+    public static void warn(String message, Object... params) {
+        logger.warn("[{}] {}", Tags.GRADLETOKEN_VERSION, message, params);
+    }
+
+    public static void info(String message) {
+        logger.info("[{}] {}", Tags.GRADLETOKEN_VERSION, message);
+    }
+
     public static void Log(String message, boolean warning) {
-        logger.log(warning ? Level.WARN : Level.INFO, String.format("[%s] %s", Tags.GRADLETOKEN_VERSION, message));
+        if (warning) {
+
+        } else {
+            logger.info("[{}] {}", Tags.GRADLETOKEN_VERSION, message);
+        }
     }
 }
