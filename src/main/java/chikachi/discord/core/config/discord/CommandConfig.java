@@ -19,6 +19,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Joiner;
 
 import chikachi.discord.core.DiscordClient;
@@ -27,6 +30,7 @@ import chikachi.discord.core.config.Configuration;
 @SuppressWarnings({ "MismatchedQueryAndUpdateOfCollection" })
 public class CommandConfig {
 
+    private static final Logger log = LoggerFactory.getLogger(CommandConfig.class);
     private String name;
     private String command;
     private boolean enabled;
@@ -78,7 +82,7 @@ public class CommandConfig {
     }
 
     private boolean checkPermission(User user, MessageChannel channel) {
-        if (this.permissions.size() == 0) {
+        if (this.permissions.isEmpty()) {
             return true;
         }
 
@@ -91,10 +95,19 @@ public class CommandConfig {
         }
 
         final List<Role> roles = new ArrayList<>();
-        if (channel instanceof TextChannel) {
-            Member member = ((TextChannel) channel).getGuild().getMember(user);
+        if (channel instanceof TextChannel textChannel) {
+            Member member = textChannel.getGuild().getMember(user);
             if (member != null) {
                 roles.addAll(member.getRoles());
+            } else {
+                log.warn("User[{}] was not found. Name={}. Queueing in JDA thread", user.getId(), user.getName());
+                // textChannel.getGuild().findMembers(pmember -> pmember.getId().equals(user.getId()))
+                // .onSuccess(members -> {
+                // if (members.isEmpty()) {
+                // log.warn("User[{}] could not be found. Name={}", user.getId(), user.getName());
+                // return;
+                // }
+                // });
             }
         } else if (channel instanceof PrivateChannel
                 && Configuration.getConfig().discord.channels.generic.allowDMCommands) {
@@ -106,9 +119,13 @@ public class CommandConfig {
                     });
                 }
 
+        return hasPermission(user, roles);
+    }
+
+    private boolean hasPermission(User user, List<Role> roles) {
         for (String permission : permissions) {
             if (permission.startsWith("role:")) {
-                if (roles.size() > 0) {
+                if (!roles.isEmpty()) {
                     if (roles.stream().anyMatch(
                             role -> role.getName().equalsIgnoreCase(permission.substring(5))
                                     || role.getId().equals(permission.substring(5)))) {

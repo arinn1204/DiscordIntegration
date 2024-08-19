@@ -2,6 +2,8 @@ package chikachi.discord.core.config.validator;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+
 import chikachi.discord.core.DiscordIntegrationLogger;
 import chikachi.discord.core.config.validator.rules.ChannelCommandPrefixEmptyRule;
 import chikachi.discord.core.config.validator.rules.ChannelDescriptionsEnabledButEmptyRule;
@@ -12,6 +14,8 @@ import chikachi.discord.core.config.validator.rules.IMCEnabledAndBlacklistEmptyR
 import chikachi.discord.core.config.validator.rules.MinecraftChatPrefixTooLongRule;
 
 public abstract class ConfigurationValidator {
+
+    private static final Logger log = DiscordIntegrationLogger.getLogger(ConfigurationValidator.class);
 
     private static ArrayList<IConfigurationValidationRule> rules = new ArrayList<>();
 
@@ -34,22 +38,21 @@ public abstract class ConfigurationValidator {
     }
 
     public static void validateAndPrintAll() {
-        DiscordIntegrationLogger.Log("Validating the configuration..");
+        log.trace("Validating the configuration..");
         ValidationResult[] results = validateAll();
         int invalid = 0;
 
         for (ValidationResult result : results) {
             if (!result.successful) {
-                DiscordIntegrationLogger.Log(String.format("[HINT] %s", result.hint));
+                log.debug("[HINT] {}", result.hint);
                 invalid++;
             }
         }
 
-        DiscordIntegrationLogger.Log(
-                String.format(
-                        "Configuration validated. %d of %d rules were successful.",
-                        getTotalTestCount() - invalid,
-                        getTotalTestCount()));
+        log.trace(
+                "Configuration validated. {} of {} rules were successful.",
+                getTotalTestCount() - invalid,
+                getTotalTestCount());
     }
 
     public static int getTotalTestCount() {

@@ -21,12 +21,19 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
+
+import org.slf4j.Logger;
 
 import chikachi.discord.core.config.Configuration;
 import chikachi.discord.core.config.minecraft.MinecraftConfig;
 import chikachi.discord.core.config.types.MessageConfig;
 
 public class DiscordClient extends ListenerAdapter {
+
+    private static final Logger log = DiscordIntegrationLogger.getLogger(DiscordClient.class);
 
     private static DiscordClient instance;
     private ArrayList<EventListener> eventListeners = new ArrayList<>();
@@ -45,7 +52,7 @@ public class DiscordClient extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent event) {
-        DiscordIntegrationLogger.Log("Logged in as " + getSelf().getName());
+        log.info("Logged in as {}", getSelf().getName());
 
         this.isReady = true;
 
@@ -67,7 +74,7 @@ public class DiscordClient extends ListenerAdapter {
     private void connect(boolean noMessage) {
         if (this.jda != null) {
             if (noMessage) {
-                DiscordIntegrationLogger.Log("Is already connected", true);
+                log.warn("Is already connected");
             }
             return;
         }
@@ -76,14 +83,19 @@ public class DiscordClient extends ListenerAdapter {
 
         if (token == null || token.isEmpty()) {
             if (noMessage) {
-                DiscordIntegrationLogger.Log("Missing token", true);
+                log.error("Missing token");
             }
             return;
         }
 
         try {
-            JDABuilder builder = JDABuilder.createLight(token).setToken(token).setBulkDeleteSplittingEnabled(false)
-                    .addEventListeners(this);
+            JDABuilder builder = JDABuilder.createLight(token)
+                    .enableIntents(
+                            GatewayIntent.GUILD_MEMBERS,
+                            GatewayIntent.GUILD_PRESENCES,
+                            GatewayIntent.MESSAGE_CONTENT)
+                    .setBulkDeleteSplittingEnabled(false).setMemberCachePolicy(MemberCachePolicy.ONLINE)
+                    .enableCache(CacheFlag.getPrivileged()).addEventListeners(this);
 
             for (EventListener eventListener : this.eventListeners) {
                 builder.addEventListeners(eventListener);
@@ -91,8 +103,7 @@ public class DiscordClient extends ListenerAdapter {
 
             this.jda = builder.build();
         } catch (Exception e) {
-            DiscordIntegrationLogger.Log("Failed to connect to Discord", true);
-            e.printStackTrace();
+            log.error("Failed to connect to Discord", e);
         }
     }
 
@@ -135,14 +146,14 @@ public class DiscordClient extends ListenerAdapter {
     void disconnect(boolean noMessage) {
         if (this.jda == null) {
             if (!noMessage) {
-                DiscordIntegrationLogger.Log("Is already disconnected", true);
+                log.warn("Is already disconnected");
             }
             return;
         }
 
         this.jda.shutdown();
         if (!noMessage) {
-            DiscordIntegrationLogger.Log("Disconnected from Discord", true);
+            log.warn("Disconnected from Discord");
         }
         this.jda = null;
     }
@@ -185,20 +196,15 @@ public class DiscordClient extends ListenerAdapter {
         for (Long channelId : channels) {
             TextChannel channel = this.jda.getTextChannelById(channelId);
             if (channel == null) {
-                DiscordIntegrationLogger.Log(String.format("Could not find channel %s", channelId));
+                log.info("Could not find channel {}", channelId);
             } else {
                 if (!channel.canTalk()) {
-                    DiscordIntegrationLogger.Log(
-                            String.format(
-                                    "Missing permission to write in channel %s (%s)",
-                                    channel.getName(),
-                                    channelId));
+                    log.warn("Missing permission to write in channel {} ({})", channel.getName(), channelId);
                     continue;
                 }
 
                 if (Configuration.getConfig().discord.channels.channels.containsKey(channelId)) {
-                    if (Configuration.getConfig().discord.channels.channels.get(channelId).webhook.trim().length()
-                            > 0) {
+                    if (!Configuration.getConfig().discord.channels.channels.get(channelId).webhook.trim().isEmpty()) {
                         WebhookMessage webhookMessage = message.toWebhook(channel);
                         if (webhookMessage.queue(this.jda, channelId)) {
                             continue;

@@ -14,6 +14,8 @@ import java.util.List;
 
 import net.minecraft.nbt.NBTTagCompound;
 
+import org.slf4j.Logger;
+
 import chikachi.discord.core.DiscordClient;
 import chikachi.discord.core.DiscordIntegrationLogger;
 import chikachi.discord.core.Message;
@@ -23,6 +25,8 @@ import chikachi.discord.core.config.types.MessageConfig;
 import cpw.mods.fml.common.event.FMLInterModComms;
 
 public class IMCHandler {
+
+    private static final Logger log = DiscordIntegrationLogger.getLogger(IMCHandler.class);
 
     private static List<String> registeredIMCMods = new ArrayList<>();
 
@@ -46,11 +50,12 @@ public class IMCHandler {
 
     @SuppressWarnings("UnusedParameters")
     private static void onMessageReceived(String modId, String key, String message) {
+        log.trace(message);
         IMCConfig imcConfig = Configuration.getConfig().imc;
         if (key.equalsIgnoreCase("registerListener")) {
             if (!registeredIMCMods.contains(modId)) {
                 if (imcConfig.isAllowed(modId)) {
-                    DiscordIntegrationLogger.Log(String.format("Added %s as listener", modId));
+                    log.info("Added {} as listener", modId);
 
                     sendStatusIMC(modId, true, key, "Registered");
 
@@ -63,7 +68,7 @@ public class IMCHandler {
             }
         } else if (key.equalsIgnoreCase("unregisterListener")) {
             if (registeredIMCMods.contains(modId)) {
-                DiscordIntegrationLogger.Log(String.format("Removed %s as listener", modId));
+                log.info("Removed {} as listener", modId);
 
                 sendStatusIMC(modId, true, key, "Unregistered");
 
@@ -103,12 +108,11 @@ public class IMCHandler {
     private static void notAllowed(String modId, String key, String action) {
         IMCConfig imcConfig = Configuration.getConfig().imc;
 
-        DiscordIntegrationLogger.Log(
-                String.format(
-                        "%s tried to %s but %s",
-                        modId,
-                        action,
-                        imcConfig.isWhitelist() ? "wasn't on the whitelist" : "was on the blacklist"));
+        log.info(
+                "{} tried to {} but {}",
+                modId,
+                action,
+                imcConfig.isWhitelist() ? "wasn't on the whitelist" : "was on the blacklist");
 
         sendStatusIMC(modId, false, key, "Not Allowed");
     }

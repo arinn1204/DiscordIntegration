@@ -9,7 +9,11 @@
 
 package chikachi.discord;
 
+import static chikachi.discord.core.DiscordIntegrationLogger.getLogger;
+
 import net.minecraftforge.common.MinecraftForge;
+
+import org.slf4j.Logger;
 
 import chikachi.discord.command.CommandDiscord;
 import chikachi.discord.core.CoreConstants;
@@ -37,6 +41,8 @@ import discordintegration.Tags;
         acceptableRemoteVersions = "*")
 public class DiscordIntegration {
 
+    public static final Logger logger = getLogger(DiscordIntegration.class);
+
     @Mod.Instance
     static DiscordIntegration instance;
 
@@ -45,6 +51,7 @@ public class DiscordIntegration {
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
+        logger.trace("onPreInit");
         proxy.onPreInit(event.getModConfigurationDirectory());
 
         CoreUtils.addPatterns();
@@ -55,14 +62,18 @@ public class DiscordIntegration {
 
     @Mod.EventHandler
     public void onPostInit(FMLPostInitializationEvent event) {
+        logger.trace("onPostInit");
         // event.buildSoftDependProxy("Dynmap", "chikachi.discord.integration.DynmapIntegration");
     }
 
     @Mod.EventHandler
-    public void onServerAboutToStart(FMLServerAboutToStartEvent event) {}
+    public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
+        logger.trace("onServerAboutToStart");
+    }
 
     @Mod.EventHandler
     public void onServerStarting(FMLServerStartingEvent event) {
+        logger.trace("onServerStarting");
         proxy.onServerStarting();
 
         DiscordClient.getInstance().addEventListener(new DiscordListener());
@@ -72,16 +83,19 @@ public class DiscordIntegration {
 
     @Mod.EventHandler
     public void onServerStarted(FMLServerStartedEvent event) {
+        logger.trace("onServerStarted");
         proxy.onServerStarted();
     }
 
     @Mod.EventHandler
     public void onServerStopping(FMLServerStoppingEvent event) {
+        logger.info("onServerStopping");
         proxy.onServerStopping();
     }
 
     @Mod.EventHandler
     public void onServerStopped(FMLServerStoppedEvent event) {
+        logger.info("onServerStopped");
         proxy.onServerStopped();
     }
 

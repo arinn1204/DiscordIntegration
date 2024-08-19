@@ -24,6 +24,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 
+import org.slf4j.Logger;
+
 import com.mojang.authlib.GameProfile;
 
 import chikachi.discord.DiscordCommandSender;
@@ -39,8 +41,11 @@ import chikachi.discord.core.config.discord.DiscordChannelGenericConfig;
 import chikachi.discord.core.config.discord.DiscordConfig;
 import chikachi.discord.core.config.linking.LinkingRequest;
 import cpw.mods.fml.common.FMLCommonHandler;
+import joptsimple.internal.Strings;
 
 public class DiscordListener extends ListenerAdapter {
+
+    private static final Logger log = DiscordIntegrationLogger.getLogger(DiscordListener.class);
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -63,6 +68,11 @@ public class DiscordListener extends ListenerAdapter {
         }
 
         String content = event.getMessage().getContentDisplay().trim();
+
+        if (Strings.isNullOrEmpty(content)) {
+            log.warn("No content was received from message for user {}", event.getAuthor().getName());
+            return;
+        }
 
         if (event.getChannelType() == ChannelType.TEXT) {
             Long channelId = event.getChannel().getIdLong();
@@ -136,7 +146,8 @@ public class DiscordListener extends ListenerAdapter {
             Message message = new Message().setAuthor(event.getMember().getEffectiveName())
                     .setMessage(config.discord.channels.generic.messages.chatMessage).setArguments(arguments);
 
-            DiscordIntegrationLogger.Log(message.getFormattedTextMinecraft());
+            log.trace(message.getFormattedTextMinecraft());
+
             for (EntityPlayerMP player : players) {
                 player.addChatMessage(new ChatComponentText(message.getFormattedTextMinecraft()));
             }
