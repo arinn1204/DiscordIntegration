@@ -6,23 +6,6 @@ name: Release tagged build
 on:
   push:
     tags: [ '*' ]
-  workflow_call:
-    secrets:
-      MAVEN_USER:
-        required: false
-      MAVEN_PASSWORD:
-        required: false
-      CURSEFORGE_TOKEN:
-        required: false
-      MODRINTH_TOKEN:
-        required: false
-    inputs:
-      workspace:
-        description: 'setupCIWorkspace/setupDecompWorkspace'
-        required: false
-        default: "setupCIWorkspace"
-        type: string
-
 permissions:
   contents: write
 
@@ -57,12 +40,12 @@ jobs:
         run: chmod +x gradlew
 
 #      - name: Setup the workspace
-#        run: ./gradlew --build-cache --info --stacktrace -PmavenPublishUrl='${{ env.MAVEN_PUBLISHING_URL }}' ${{ inputs.workspace }}
+#        run: ./gradlew --build-cache --info --stacktrace -PmavenPublishUrl='${{ env.MAVEN_PUBLISHING_URL }}' setupCIWorkspace
       - name: Setup the workspace
-        run: ./gradlew --build-cache --info --stacktrace ${{ inputs.workspace }}
+        run: ./gradlew --build-cache --info --stacktrace setupCIWorkspace
 
       - name: Build the mod
-        run: ./gradlew --build-cache --info --stacktrace -PmavenPublishUrl='${{ env.MAVEN_PUBLISHING_URL }}' assemble
+        run: ./gradlew --build-cache --info --stacktrace assemble
 
       # Continue on error in the following steps to make sure releases still get made even if one of the methods fails
 
