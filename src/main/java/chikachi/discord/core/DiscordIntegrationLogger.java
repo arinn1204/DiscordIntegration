@@ -12,29 +12,11 @@ package chikachi.discord.core;
 import org.slf4j.Logger;
 import org.slf4j.simple.SimpleLoggerFactory;
 
-import discordintegration.Tags;
-
 public class DiscordIntegrationLogger {
 
-    public static final Logger logger = new SimpleLoggerFactory().getLogger(CoreConstants.MODNAME);
+    private static final SimpleLoggerFactory factory = new SimpleLoggerFactory();
 
-    public static void Log(String message) {
-        Log(message, false);
-    }
-
-    public static void warn(String message, Object... params) {
-        logger.warn("[{}] {}", Tags.GRADLETOKEN_VERSION, message, params);
-    }
-
-    public static void info(String message) {
-        logger.info("[{}] {}", Tags.GRADLETOKEN_VERSION, message);
-    }
-
-    public static void Log(String message, boolean warning) {
-        if (warning) {
-
-        } else {
-            logger.info("[{}] {}", Tags.GRADLETOKEN_VERSION, message);
-        }
+    public static Logger getLogger(Class<?> clazz) {
+        return factory.getLogger(CoreConstants.MODNAME + "-" + clazz.getSimpleName());
     }
 }

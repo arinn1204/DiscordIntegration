@@ -1,0 +1,56 @@
+name: Build and test
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate gradle wrapper checksum
+        uses: gradle/wrapper-validation-action@v2
+      - name: Checkout GTNH workflows repo
+        uses: actions/checkout@v4
+        with:
+          repository: GTNewHorizons/GTNH-Actions-Workflows
+          path: .gtnh-workflows
+          fetch-depth: 0
+      - name: Set up JDK versions
+        uses: actions/setup-java@v4
+        with:
+          java-version: |
+            8
+            21
+            17
+          distribution: 'zulu'
+          cache: gradle
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Setup the workspace
+        run: ./gradlew --build-cache --info --stacktrace setupCIWorkspace
+      - name: Compile
+        run: ./gradlew --build-cache --info --stacktrace assemble
+      - name: Run server for 90 seconds
+        run: |
+          mkdir -p run
+          echo "eula=true" > run/eula.txt
+          # Set a constant seed with a village at spawn
+          echo "level-seed=-6202107849386030209\nonline-mode=true\n" > run/server.properties
+          echo "stop" > run/stop.txt
+          timeout 90 ./gradlew --build-cache --info --stacktrace runServer 2>&1 < run/stop.txt | tee -a server.log || true
+      - name: Test no errors reported during server run
+        run: |
+          chmod +x .gtnh-workflows/scripts/test_no_error_reports
+          .gtnh-workflows/scripts/test_no_error_reports
+      - name: Test no prerelease dependencies used
+        run: |
+          ! grep -F -- "-pre" dependencies.gradle*
+      - name: Attach compilation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.repository_id }}-build-libs
+          path: build/libs/
+          retention-days: 31

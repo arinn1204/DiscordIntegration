@@ -100,7 +100,14 @@ public class CommandConfig {
             if (member != null) {
                 roles.addAll(member.getRoles());
             } else {
-                log.warn("User[{}] was not found. Name={}", user.getId(), user.getName());
+                log.warn("User[{}] was not found. Name={}. Queueing in JDA thread", user.getId(), user.getName());
+                // textChannel.getGuild().findMembers(pmember -> pmember.getId().equals(user.getId()))
+                // .onSuccess(members -> {
+                // if (members.isEmpty()) {
+                // log.warn("User[{}] could not be found. Name={}", user.getId(), user.getName());
+                // return;
+                // }
+                // });
             }
         } else if (channel instanceof PrivateChannel
                 && Configuration.getConfig().discord.channels.generic.allowDMCommands) {
@@ -112,6 +119,10 @@ public class CommandConfig {
                     });
                 }
 
+        return hasPermission(user, roles);
+    }
+
+    private boolean hasPermission(User user, List<Role> roles) {
         for (String permission : permissions) {
             if (permission.startsWith("role:")) {
                 if (!roles.isEmpty()) {

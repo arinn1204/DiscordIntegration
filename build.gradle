@@ -1,4 +1,41 @@
-
 plugins {
   id 'com.gtnewhorizons.gtnhconvention'
+}
+
+shadowJar {
+  relocate('org.slf4j', 'chikachi.discord.shadow.org.slf4j') {
+    exclude 'META-INF/services/org.slf4j.spi.SLF4JServiceProvider'
+  }
+
+  mergeServiceFiles {
+    include 'META-INF/services/org.slf4j.spi.SLF4JServiceProvider'
+  }
+}
+
+task relocateSlf4jServiceProvider {
+  dependsOn shadowJar
+
+  doLast {
+    def tempDir = layout.buildDirectory.dir('temp').get().asFile
+    def jarFile = tasks.shadowJar.archiveFile.get().asFile
+
+    copy {
+      from zipTree(jarFile)
+      into tempDir
+    }
+
+    file("${tempDir}/META-INF/services/chikachi.discord.shadow.org.slf4j.spi.SLF4JServiceProvider").renameTo(
+      "${tempDir}/META-INF/services/org.slf4j.spi.SLF4JServiceProvider"
+    )
+
+    ant.zip(destfile: jarFile) {
+      zipfileset(dir: tempDir)
+    }
+
+    delete tempDir
+  }
+}
+
+tasks.build {
+  dependsOn relocateSlf4jServiceProvider
 }

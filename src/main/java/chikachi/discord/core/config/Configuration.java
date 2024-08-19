@@ -15,6 +15,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -31,6 +33,8 @@ import chikachi.discord.core.config.types.MessageConfigAdapter;
 import chikachi.discord.core.config.types.PatternAdapter;
 
 public class Configuration {
+
+    private static final Logger log = DiscordIntegrationLogger.getLogger(Configuration.class);
 
     private static File directory;
 
@@ -82,12 +86,12 @@ public class Configuration {
                 config.fillFields();
             } catch (Exception e) {
                 if (e instanceof JsonSyntaxException) {
-                    DiscordIntegrationLogger.Log(
+                    log.warn(
                             "Config had invalid syntax - Please check it using a JSON tool ( https://jsonlint.com/ ) or make sure it have the right content",
-                            true);
+                            e);
+                } else {
+                    log.error("An unknown exception occurred", e);
                 }
-
-                e.printStackTrace();
 
                 if (config == null) {
                     config = new ConfigWrapper();
@@ -127,10 +131,10 @@ public class Configuration {
                 }
             } catch (Exception e) {
                 if (e instanceof JsonSyntaxException) {
-                    DiscordIntegrationLogger.Log("Linking file is corrupt", true);
+                    log.warn("Linking file is corrupt", e);
+                } else {
+                    log.error("An unknown exception occurred", e);
                 }
-
-                e.printStackTrace();
 
                 if (linking == null) {
                     linking = new LinkingWrapper();
@@ -157,7 +161,7 @@ public class Configuration {
             writer.write(gson.toJson(data));
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("An exception occurred while writing the file", e);
         }
     }
 
@@ -171,7 +175,7 @@ public class Configuration {
             writer.write(gson.toJson(cleanConfig));
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("An exception occurred while writing the file", e);
         }
     }
 

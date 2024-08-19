@@ -23,6 +23,8 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
 
+import org.slf4j.Logger;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
@@ -36,6 +38,8 @@ import chikachi.discord.core.Patterns;
 @SuppressWarnings("EntityConstructor")
 @ParametersAreNonnullByDefault
 public class DiscordCommandSender extends FakePlayer {
+
+    private static final Logger log = DiscordIntegrationLogger.getLogger(DiscordCommandSender.class);
 
     private static final UUID playerUUID = UUID.fromString("828653ca-0185-43d4-b26d-620a7f016be6");
     private static final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(
@@ -81,11 +85,11 @@ public class DiscordCommandSender extends FakePlayer {
         this.channel.sendMessage(Joiner.on("\n").join(messages)).submit().exceptionally((Throwable t) -> {
             // We could do some kind of retry here, but it feels like JDA should be responsible for that. Maybe it
             // already does.
-            DiscordIntegrationLogger.Log(
-                    "Exception sending " + numMessages
-                            + " messages to Discord:\n"
-                            + Throwables.getStackTraceAsString(t),
-                    true);
+            log.warn(
+                    "Exception sending {} messages to Discord:\n{}",
+                    numMessages,
+                    Throwables.getStackTraceAsString(t),
+                    t);
             return null;
         });
     }
