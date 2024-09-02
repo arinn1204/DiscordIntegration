@@ -72,7 +72,7 @@ public class DiscordListener extends ListenerAdapter {
         if (Strings.isNullOrEmpty(content)) {
             log.warn("No content was received from message for user {}", event.getAuthor().getName());
             return;
-        } else if (content.startsWith("/")) {
+        } else if (content.startsWith("/") || discordConfig.ignoredCommands.contains(content)) {
             log.info("User {} is executing command: {}", event.getAuthor().getName(), content);
             return;
         }
