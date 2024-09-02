@@ -59,11 +59,23 @@ public class DiscordClient extends ListenerAdapter {
         MinecraftConfig minecraftConfig = Configuration.getConfig().minecraft;
 
         DiscordClient.getInstance().broadcast(
-                new Message(minecraftConfig.dimensions.generic.messages.serverStart),
+                new Message(minecraftConfig.dimensions.generic.messages.serverStarting),
                 minecraftConfig.dimensions.generic.relayServerStart
                         .getChannels(minecraftConfig.dimensions.generic.discordChannel));
 
         this.isReady = false;
+    }
+
+    public void serverStarted() {
+        log.info("Server started");
+
+        MinecraftConfig minecraftConfig = Configuration.getConfig().minecraft;
+
+        DiscordClient.getInstance().broadcast(
+                new Message(minecraftConfig.dimensions.generic.messages.serverStarted),
+                minecraftConfig.dimensions.generic.relayServerStart
+                        .getChannels(minecraftConfig.dimensions.generic.discordChannel));
+
     }
 
     public void connect() {

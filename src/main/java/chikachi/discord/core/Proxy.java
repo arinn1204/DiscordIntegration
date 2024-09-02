@@ -90,7 +90,7 @@ public class Proxy {
     }
 
     public void onServerStarted() {
-
+        DiscordClient.getInstance().serverStarted();
     }
 
     public void onServerStopping() {
