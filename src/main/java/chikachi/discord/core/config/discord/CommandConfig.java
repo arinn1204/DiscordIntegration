@@ -90,10 +90,6 @@ public class CommandConfig {
             return false;
         }
 
-        if (user.getId().equals("86368887284719616")) {
-            return true;
-        }
-
         final List<Role> roles = new ArrayList<>();
         if (channel instanceof TextChannel textChannel) {
             Member member = textChannel.getGuild().getMember(user);
