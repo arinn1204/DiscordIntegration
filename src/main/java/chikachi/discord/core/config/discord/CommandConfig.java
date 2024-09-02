@@ -33,7 +33,7 @@ public class CommandConfig {
     private static final Logger log = LoggerFactory.getLogger(CommandConfig.class);
     private String name;
     private String command;
-    private boolean enabled;
+    private boolean enabled = true;
     private List<String> aliases = new ArrayList<>();
     private List<String> permissions = new ArrayList<>();
 
