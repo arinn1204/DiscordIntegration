@@ -11,7 +11,6 @@ package chikachi.discord.core.config.discord;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import net.dv8tion.jda.api.entities.User;
@@ -34,10 +33,12 @@ public class DiscordConfig {
     public Set<String> ignoredCommands = new HashSet<>();
 
     public void fillFields() {
-        if (this.token == null && System.getenv().containsKey("DISCORD_TOKEN")) {
-            this.token = System.getenv("DISCORD_TOKEN");
-        } else {
-            this.token = "";
+        if (this.token == null) {
+            if (System.getenv().containsKey("DISCORD_TOKEN")) {
+                this.token = System.getenv("DISCORD_TOKEN");
+            } else {
+                this.token = "";
+            }
         }
 
         if (this.ignoresUsers == null) {
@@ -53,9 +54,14 @@ public class DiscordConfig {
             ignoredCommands = new HashSet<>();
         }
 
-        ignoredCommands.addAll(Set.of(
-           "trash_can"
-        ));
+        Set<String> defaultIgnoredCommands = new HashSet<>() {
+
+            {
+                add("trash_can");
+            }
+        };
+
+        ignoredCommands.addAll(defaultIgnoredCommands);
     }
 
     public boolean isIgnoringUser(User user) {
