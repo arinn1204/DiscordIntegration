@@ -29,7 +29,9 @@ public class DiscordConfig {
     public DiscordMainChannelConfig channels = new DiscordMainChannelConfig();
 
     public void fillFields() {
-        if (this.token == null) {
+        if (this.token == null && System.getenv().containsKey("DISCORD_TOKEN")) {
+            this.token = System.getenv("DISCORD_TOKEN");
+        } else {
             this.token = "";
         }
 
