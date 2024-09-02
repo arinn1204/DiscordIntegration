@@ -8,7 +8,7 @@ on:
       - "*.gradle"
       - "*.gitignore"
 jobs:
-  build-and-test:
+  pr-builder:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
