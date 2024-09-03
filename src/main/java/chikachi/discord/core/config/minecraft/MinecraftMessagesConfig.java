@@ -33,7 +33,8 @@ public class MinecraftMessagesConfig {
     private transient static final String ACHIEVEMENT_NORMAL = "**{USER}** just gained the achievement **{ACHIEVEMENT}**!\n*{DESCRIPTION}*";
     private transient static final String ACHIEVEMENT_WEBHOOK = "*Gained the achievement **{ACHIEVEMENT}**!\n{DESCRIPTION}*";
 
-    private transient static final String SERVER_START = "Server started!";
+    private transient static final String SERVER_STARTING = "Server starting...";
+    private transient static final String SERVER_STARTED = "Server started!";
     private transient static final String SERVER_STOP = "Server stopped!";
     private transient static final String SERVER_CRASH = "Server crash detected!";
 
@@ -50,7 +51,9 @@ public class MinecraftMessagesConfig {
     @Since(3.0)
     public MessageConfig achievement = null;
     @Since(3.0)
-    public MessageConfig serverStart = null;
+    public MessageConfig serverStarting = null;
+    @Since(3.0)
+    public MessageConfig serverStarted = null;
     @Since(3.0)
     public MessageConfig serverStop = null;
     @Since(3.0)
@@ -117,8 +120,12 @@ public class MinecraftMessagesConfig {
             this.achievement.webhook = ACHIEVEMENT_WEBHOOK;
         }
 
-        if (this.serverStart == null) {
-            this.serverStart = new MessageConfig(SERVER_START);
+        if (this.serverStarting == null) {
+            this.serverStarting = new MessageConfig(SERVER_STARTING);
+        }
+
+        if (this.serverStarted == null) {
+            this.serverStarted = new MessageConfig(SERVER_STARTED);
         }
 
         if (this.serverStop == null) {

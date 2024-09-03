@@ -9,12 +9,19 @@
 
 package chikachi.discord.core;
 
+import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.simple.SimpleLoggerFactory;
+import org.slf4j.simple.SimpleServiceProvider;
 
 public class DiscordIntegrationLogger {
 
-    private static final SimpleLoggerFactory factory = new SimpleLoggerFactory();
+    private static final SimpleServiceProvider provider = new SimpleServiceProvider();
+    private static final ILoggerFactory factory;
+
+    static {
+        provider.initialize();
+        factory = provider.getLoggerFactory();
+    }
 
     public static Logger getLogger(Class<?> clazz) {
         return factory.getLogger(CoreConstants.MODNAME + "-" + clazz.getSimpleName());

@@ -27,10 +27,13 @@ import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AchievementEvent;
 
+import org.slf4j.Logger;
+
 import com.google.common.base.Joiner;
 
 import chikachi.discord.core.CoreUtils;
 import chikachi.discord.core.DiscordClient;
+import chikachi.discord.core.DiscordIntegrationLogger;
 import chikachi.discord.core.Message;
 import chikachi.discord.core.config.Configuration;
 import chikachi.discord.core.config.minecraft.MinecraftConfig;
@@ -42,9 +45,16 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 
 public class MinecraftListener {
 
+    private static final Logger log = DiscordIntegrationLogger.getLogger(MinecraftListener.class);
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onCommand(CommandEvent event) {
         if (event.isCanceled()) return;
+        log.info(
+                "User {} is executing command {} {}",
+                event.sender.getCommandSenderName(),
+                event.command.getCommandName(),
+                event.parameters);
 
         String commandName = event.command.getCommandName();
         ICommandSender sender = event.sender;

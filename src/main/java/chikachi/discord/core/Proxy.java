@@ -80,17 +80,16 @@ public class Proxy {
         }
 
         Configuration.onPreInit(configurationPath.getAbsolutePath() + File.separator + "Chikachi");
-
+        DiscordClient.getInstance().connect();
         preInit = true;
     }
 
     public void onServerStarting() {
-        DiscordClient.getInstance().connect();
         started = new Date().getTime();
     }
 
     public void onServerStarted() {
-
+        DiscordClient.getInstance().serverStarted();
     }
 
     public void onServerStopping() {
