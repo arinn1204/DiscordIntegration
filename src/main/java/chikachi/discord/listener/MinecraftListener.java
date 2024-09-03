@@ -50,7 +50,11 @@ public class MinecraftListener {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onCommand(CommandEvent event) {
         if (event.isCanceled()) return;
-        log.info("User {} is executing command {}", event.sender.getCommandSenderName(), event.command.getCommandName());
+        log.info(
+                "User {} is executing command {} {}",
+                event.sender.getCommandSenderName(),
+                event.command.getCommandName(),
+                event.parameters);
 
         String commandName = event.command.getCommandName();
         ICommandSender sender = event.sender;
