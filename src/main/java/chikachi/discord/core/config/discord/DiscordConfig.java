@@ -10,8 +10,6 @@
 package chikachi.discord.core.config.discord;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import net.dv8tion.jda.api.entities.User;
 
@@ -30,8 +28,6 @@ public class DiscordConfig {
     @Since(3.0)
     public DiscordMainChannelConfig channels = new DiscordMainChannelConfig();
 
-    public Set<String> ignoredCommands = new HashSet<>();
-
     public void fillFields() {
         if (this.token == null) {
             if (System.getenv().containsKey("DISCORD_TOKEN")) {
@@ -49,19 +45,6 @@ public class DiscordConfig {
             this.channels = new DiscordMainChannelConfig();
         }
         this.channels.fillFields();
-
-        if (ignoredCommands == null) {
-            ignoredCommands = new HashSet<>();
-        }
-
-        Set<String> defaultIgnoredCommands = new HashSet<>() {
-
-            {
-                add("trash_can");
-            }
-        };
-
-        ignoredCommands.addAll(defaultIgnoredCommands);
     }
 
     public boolean isIgnoringUser(User user) {

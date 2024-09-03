@@ -59,7 +59,7 @@ public class MinecraftDimensionConfig {
         }
 
         if (this.relayCommands == null) {
-            this.relayCommands = new ChannelConfigType();
+            this.relayCommands = new ChannelConfigType(true);
         }
 
         if (this.relayPlayerJoin == null) {
