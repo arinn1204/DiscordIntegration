@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import chikachi.discord.core.DiscordIntegrationLogger;
 import net.dv8tion.jda.api.entities.User;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -31,9 +32,11 @@ import chikachi.discord.core.DiscordClient;
 import chikachi.discord.core.MinecraftFormattingCodes;
 import chikachi.discord.core.config.Configuration;
 import chikachi.discord.core.config.linking.LinkingRequest;
+import org.slf4j.Logger;
 
 @ParametersAreNonnullByDefault
 public class CommandDiscord extends CommandBase {
+    private static Logger log = DiscordIntegrationLogger.getLogger(CommandDiscord.class);
 
     @Override
     public String getCommandName() {
@@ -165,7 +168,9 @@ public class CommandDiscord extends CommandBase {
 
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return sender.canCommandSenderUseCommand(4, getCommandName());
+        boolean canUseCommand = sender.canCommandSenderUseCommand(4, getCommandName());
+        log.info("User {} can{} execute {}", sender.getCommandSenderName(), canUseCommand ? "" : " not", getCommandName());
+        return canUseCommand;
     }
 
     @Override
