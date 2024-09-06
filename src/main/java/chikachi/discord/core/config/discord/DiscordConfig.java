@@ -17,6 +17,23 @@ import com.google.gson.annotations.Since;
 
 public class DiscordConfig {
 
+    public enum PermissionLevel {
+
+        ALL(0),
+        OP(2),
+        SERVER(4);
+
+        private final int level;
+
+        PermissionLevel(int level) {
+            this.level = level;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+    }
+
     @Since(3.0)
     public String token = "";
     @Since(3.0)
@@ -27,6 +44,8 @@ public class DiscordConfig {
     public ArrayList<String> ignoresUsers = new ArrayList<>();
     @Since(3.0)
     public DiscordMainChannelConfig channels = new DiscordMainChannelConfig();
+
+    public PermissionLevel permissionLevel;
 
     public void fillFields() {
         if (this.token == null) {
@@ -45,6 +64,10 @@ public class DiscordConfig {
             this.channels = new DiscordMainChannelConfig();
         }
         this.channels.fillFields();
+
+        if (this.permissionLevel == null) {
+            this.permissionLevel = PermissionLevel.ALL;
+        }
     }
 
     public boolean isIgnoringUser(User user) {

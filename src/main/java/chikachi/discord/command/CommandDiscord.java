@@ -17,7 +17,6 @@ import java.util.UUID;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import chikachi.discord.core.DiscordIntegrationLogger;
 import net.dv8tion.jda.api.entities.User;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -27,15 +26,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import chikachi.discord.core.DiscordClient;
+import chikachi.discord.core.DiscordIntegrationLogger;
 import chikachi.discord.core.MinecraftFormattingCodes;
 import chikachi.discord.core.config.Configuration;
 import chikachi.discord.core.config.linking.LinkingRequest;
-import org.slf4j.Logger;
 
 @ParametersAreNonnullByDefault
 public class CommandDiscord extends CommandBase {
+
     private static final Logger log = DiscordIntegrationLogger.getLogger(CommandDiscord.class);
 
     @Override
@@ -164,8 +165,14 @@ public class CommandDiscord extends CommandBase {
 
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        boolean canUseCommand = sender.canCommandSenderUseCommand(4, getCommandName());
-        log.info("User {} can{} execute {}", sender.getCommandSenderName(), canUseCommand ? "" : " not", getCommandName());
+        int requiredLevel = Configuration.getConfig().discord.permissionLevel.getLevel();
+        boolean canUseCommand = sender.canCommandSenderUseCommand(requiredLevel, getCommandName());
+        log.info(
+                "User {} can{} execute {}[{}]",
+                sender.getCommandSenderName(),
+                canUseCommand ? "" : " not",
+                getCommandName(),
+                requiredLevel);
         return canUseCommand;
     }
 
