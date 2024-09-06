@@ -68,10 +68,6 @@ public class CommandDiscord extends CommandBase {
             case "config":
                 SubCommandConfig.execute(sender, argsList);
                 break;
-            /*
-             * case "connect": DiscordClient.getInstance().connect(true); break; case "disconnect":
-             * DiscordClient.getInstance().disconnect(true); break;
-             */
             case "online":
                 SubCommandOnline.execute(sender);
                 break;
