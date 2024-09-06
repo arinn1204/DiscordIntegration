@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 
 @ParametersAreNonnullByDefault
 public class CommandDiscord extends CommandBase {
-    private static Logger log = DiscordIntegrationLogger.getLogger(CommandDiscord.class);
+    private static final Logger log = DiscordIntegrationLogger.getLogger(CommandDiscord.class);
 
     @Override
     public String getCommandName() {
